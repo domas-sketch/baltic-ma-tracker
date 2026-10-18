@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baltic MA Tracker</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2430;--muted:#667085;--line:#e4e7ec;--accent:#2f6fde;--accent-soft:#e8f0fd;--lt:#c8a400;--lv:#9e1b32;--ee:#0072ce;--new:#127a3e}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--card:#171c23;--ink:#e6e9ee;--muted:#98a2b3;--line:#2a313b;--accent:#6aa0ff;--accent-soft:#1d2a40;--new:#4cc27f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+header{padding:20px 24px 8px;max-width:1400px;margin:auto}
+h1{font-size:20px;margin:0}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+.warn{background:#fdecea;color:#7a1c14;border:1px solid #f5c2c0;border-radius:8px;padding:8px 12px;margin-top:10px;font-size:13px}
+main{max-width:1400px;margin:auto;padding:8px 24px 40px}
+.filters{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end}
+label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:4px}
+input,select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 11px;cursor:pointer;font:inherit;font-size:13px}
+.chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.bar{display:flex;justify-content:space-between;align-items:center;margin:14px 2px 8px;gap:12px;flex-wrap:wrap}
+.counts{display:flex;gap:16px;color:var(--muted);font-size:13px}
+.counts b{color:var(--ink);font-size:16px}
+button.dl{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer;font:inherit}
+.tablewrap{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:auto}
+table{border-collapse:collapse;width:100%;min-width:1000px}
+th{position:sticky;top:0;background:var(--card);text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:9px 10px;border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap;user-select:none}
+th.sorted::after{content:" ▾"}th.sorted.asc::after{content:" ▴"}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:hover td{background:var(--accent-soft)}
+td a{color:var(--accent);text-decoration:none;font-weight:600}
+.flag{display:inline-block;width:28px;text-align:center;border-radius:4px;font-size:11px;font-weight:700;color:#fff;padding:1px 0}
+.LT{background:var(--lt)}.LV{background:var(--lv)}.EE{background:var(--ee)}
+.muted{color:var(--muted)}
+.newtag{color:var(--new);font-size:11px;font-weight:600}
+.pager{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:12px;color:var(--muted)}
+.pager button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:4px 10px;cursor:pointer}
+@media (max-width:600px){header,main{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Baltic medicine authorisations</h1>
+  <div class="sub" id="sub">Loading registers…</div>
+  <div id="warn"></div>
+</header>
+<main>
+  <div class="filters">
+    <div style="grid-column:span 2;min-width:0">
+      <label>Period</label>
+      <div class="chips" id="quick">
+        <button class="chip" data-d="7">7 days</button>
+        <button class="chip on" data-d="30">30 days</button>
+        <button class="chip" data-d="90">90 days</button>
+        <button class="chip" data-d="365">1 year</button>
+        <button class="chip" data-d="0">All</button>
+      </div>
+    </div>
+    <div><label for="from">Added from</label><input type="date" id="from"></div>
+    <div><label for="to">To</label><input type="date" id="to"></div>
+    <div><label for="datefield">Date means</label>
+      <select id="datefield">
+        <option value="auth">Authorisation date</option>
+        <option value="seen">First seen in register</option>
+        <option value="either">Either</option>
+      </select></div>
+    <div><label>Country</label>
+      <div class="chips" id="countries">
+        <button class="chip on" data-c="LT">LT</button>
+        <button class="chip on" data-c="LV">LV</button>
+        <button class="chip on" data-c="EE">EE</button>
+      </div></div>
+    <div><label for="proc">Procedure</label><select id="proc"><option value="">All</option></select></div>
+    <div><label for="mah">MAH</label><input id="mah" list="mahlist" placeholder="Company name"><datalist id="mahlist"></datalist></div>
+    <div><label for="q">Product / substance</label><input id="q" placeholder="e.g. apixaban"></div>
+    <div><label for="atc">ATC starts with</label><input id="atc" placeholder="e.g. C10"></div>
+  </div>
+
+  <div class="bar">
+    <div class="counts" id="counts"></div>
+    <button class="dl" id="dl">Download CSV</button>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr id="head"></tr></thead>
+      <tbody id="body"></tbody>
+    </table>
+  </div>
+  <div class="pager" id="pager"></div>
+</main>
+<script>
+const COLS=[["country","Ctry"],["name","Product"],["substance","Active substance"],["strength","Strength"],["form","Form"],["atc","ATC"],["mah","MAH"],["procedure","Procedure"],["auth_date","Authorised"],["first_seen","First seen"]];
+let DATA=[],META={},view=[],sortKey="auth_date",sortAsc=false,page=0;const PER=100;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const iso=d=>d.toISOString().slice(0,10);
+function setDays(n){if(n===0){$("from").value="";}else{const d=new Date();d.setDate(d.getDate()-n);$("from").value=iso(d);}$("to").value="";}
+async function load(){
+  try{
+    const r=await fetch("data.json",{cache:"no-cache"});const j=await r.json();META=j;
+    const idx=Object.fromEntries(j.columns.map((c,i)=>[c,i]));
+    DATA=j.rows.map(r=>{const o={};for(const c in idx)o[c]=r[idx[c]];o.mah=j.mah_names[o.mah_key]||o.mah;o._s=(o.name+" "+o.substance).toLowerCase();o._m=(o.mah+" "+o.mah_key).toLowerCase();return o;});
+    $("sub").textContent=`Updated ${j.updated} · ${DATA.length.toLocaleString()} active products in LT, LV and EE registers`;
+    if(j.failures&&j.failures.length)$("warn").innerHTML=`<div class="warn">Last update problem: ${esc(j.failures.join("; "))}. Showing the last good data for that country.</div>`;
+    const procs=[...new Set(DATA.map(d=>d.procedure))].sort();
+    $("proc").innerHTML='<option value="">All</option>'+procs.map(p=>`<option>${esc(p)}</option>`).join("");
+    $("mahlist").innerHTML=[...new Set(DATA.map(d=>d.mah))].sort().map(m=>`<option value="${esc(m)}">`).join("");
+    setDays(30);render();
+  }catch(e){$("sub").textContent="Data not available yet — the first update runs automatically after setup.";}
+}
+function filt(){
+  const from=$("from").value,to=$("to").value||"9999",mode=$("datefield").value;
+  const cs=[...document.querySelectorAll("#countries .on")].map(b=>b.dataset.c);
+  const proc=$("proc").value,q=$("q").value.trim().toLowerCase(),m=$("mah").value.trim().toLowerCase(),atc=$("atc").value.trim().toUpperCase();
+  const inR=d=>d&&d>=(from||"0000")&&d<=to;
+  view=DATA.filter(d=>{
+    if(!cs.includes(d.country))return false;
+    if(proc&&d.procedure!==proc)return false;
+    if(q&&!d._s.includes(q))return false;
+    if(m&&!d._m.includes(m))return false;
+    if(atc&&!(d.atc||"").toUpperCase().startsWith(atc))return false;
+    if(from||$("to").value){
+      if(mode==="auth")return inR(d.auth_date);
+      if(mode==="seen")return inR(d.first_seen);
+      return inR(d.auth_date)||inR(d.first_seen);
+    }
+    return true;
+  });
+  view.sort((a,b)=>{const x=a[sortKey]||"",y=b[sortKey]||"";return (x<y?-1:x>y?1:0)*(sortAsc?1:-1);});
+}
+function render(){
+  filt();page=Math.min(page,Math.max(0,Math.ceil(view.length/PER)-1));
+  $("head").innerHTML=COLS.map(([k,l])=>`<th data-k="${k}" class="${k===sortKey?"sorted"+(sortAsc?" asc":""):""}">${l}</th>`).join("");
+  const c={LT:0,LV:0,EE:0};view.forEach(d=>c[d.country]++);
+  $("counts").innerHTML=`<span><b>${view.length.toLocaleString()}</b> products</span><span>LT <b>${c.LT}</b></span><span>LV <b>${c.LV}</b></span><span>EE <b>${c.EE}</b></span>`;
+  $("body").innerHTML=view.slice(page*PER,(page+1)*PER).map(d=>`<tr>
+   <td><span class="flag ${d.country}">${d.country}</span></td>
+   <td><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.name)}</a></td>
+   <td>${esc(d.substance)}</td><td>${esc(d.strength)}</td><td class="muted">${esc(d.form)}</td>
+   <td>${esc(d.atc)}</td><td>${esc(d.mah)}</td><td class="muted">${esc(d.procedure)}</td>
+   <td>${esc(d.auth_date||"—")}</td>
+   <td>${d.first_seen?`<span class="newtag">${esc(d.first_seen)}</span>`:'<span class="muted">before tracking</span>'}</td></tr>`).join("")||`<tr><td colspan="10" class="muted" style="padding:24px;text-align:center">No products match these filters.</td></tr>`;
+  const pages=Math.ceil(view.length/PER);
+  $("pager").innerHTML=pages>1?`<button ${page?"":"disabled"} id="prev">‹ Prev</button> Page ${page+1} of ${pages} <button ${page<pages-1?"":"disabled"} id="next">Next ›</button>`:"";
+  if($("prev"))$("prev").onclick=()=>{page--;render();};
+  if($("next"))$("next").onclick=()=>{page++;render();};
+}
+$("head").addEventListener("click",e=>{const k=e.target.dataset.k;if(!k)return;if(k===sortKey)sortAsc=!sortAsc;else{sortKey=k;sortAsc=k!=="auth_date"&&k!=="first_seen";}render();});
+$("quick").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;document.querySelectorAll("#quick .chip").forEach(x=>x.classList.remove("on"));b.classList.add("on");setDays(+b.dataset.d);page=0;render();});
+$("countries").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;b.classList.toggle("on");page=0;render();});
+["from","to"].forEach(id=>$(id).addEventListener("change",()=>{document.querySelectorAll("#quick .chip").forEach(x=>x.classList.remove("on"));page=0;render();}));
+["datefield","proc"].forEach(id=>$(id).addEventListener("change",()=>{page=0;render();}));
+["mah","q","atc"].forEach(id=>$(id).addEventListener("input",()=>{page=0;render();}));
+$("dl").onclick=()=>{
+  const cols=["country","name","substance","strength","form","atc","mah","procedure","auth_date","first_seen","key","url"];
+  const csv="﻿"+cols.join(";")+"\n"+view.map(d=>cols.map(c=>'"'+String(d[c]??"").replace(/"/g,'""')+'"').join(";")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=`baltic-authorisations-${iso(new Date())}.csv`;a.click();
+};
+load();
+</script>
+</body>
+</html>
