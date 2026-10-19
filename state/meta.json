@@ -2,17 +2,19 @@
  "EE": {
   "baseline_date": "2026-10-18",
   "count": 6107,
-  "last_error": "2026-10-19: 403 Client Error: Forbidden for url: https://www.ravimiregister.ee/?pv=PublicDownloads",
-  "last_ok": "2026-10-18"
+  "fail_streak": 0,
+  "last_ok": "2026-10-19"
  },
  "LT": {
   "baseline_date": "2026-10-18",
   "count": 11948,
+  "fail_streak": 0,
   "last_ok": "2026-10-19"
  },
  "LV": {
   "baseline_date": "2026-10-18",
   "count": 18547,
+  "fail_streak": 0,
   "last_ok": "2026-10-19"
  }
 }
