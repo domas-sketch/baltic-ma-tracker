@@ -214,32 +214,59 @@ def fetch_lv(offline=None):
     return products
 
 
-def _ee_bytes():
+EE_PAGES = [
+    "https://www.ravimiregister.ee/?pv=PublicDownloads",
+    "https://www.ravimiregister.ee/en/publichomepage.aspx?pv=PublicDownloads",
+    "https://ravimiregister.ee/publichomepage.aspx?pv=PublicDownloads",
+]
+
+
+def _ee_once(page_url):
     import requests
+    from html import unescape
     s = requests.Session()
     s.headers.update(UA)
-    page = s.get(EE_URL, timeout=120)
+    s.headers.update({"Accept-Language": "et-EE,et;q=0.9,en;q=0.8", "Upgrade-Insecure-Requests": "1"})
+    s.get("https://www.ravimiregister.ee/", timeout=60)  # pick up cookies like a browser
+    page = s.get(page_url, timeout=120, headers={"Referer": "https://www.ravimiregister.ee/"})
     page.raise_for_status()
     form = {}
     for m in re.finditer(r"<input[^>]+>", page.text, re.I):
         tag = m.group(0)
         typ = re.search(r'type="([^"]*)"', tag, re.I)
-        if typ and typ.group(1).lower() not in ("hidden",):
+        if typ and typ.group(1).lower() != "hidden":
             continue
         name = re.search(r'name="([^"]*)"', tag, re.I)
         val = re.search(r'value="([^"]*)"', tag, re.I)
         if name:
-            from html import unescape
             form[unescape(name.group(1))] = unescape(val.group(1)) if val else ""
     if "__VIEWSTATE" not in form:
-        raise RuntimeError("EE download page changed (no __VIEWSTATE)")
+        raise RuntimeError("download page changed (no __VIEWSTATE)")
     form["__EVENTTARGET"] = EE_TARGET
     form["__EVENTARGUMENT"] = ""
-    r = s.post(EE_URL, data=form, timeout=600)
+    r = s.post(page.url, data=form, timeout=600,
+               headers={"Referer": page.url, "Origin": "https://www.ravimiregister.ee"})
     r.raise_for_status()
     if r.content[:200].lstrip().lower().startswith((b"<!doctype", b"<html")):
-        raise RuntimeError("EE returned an HTML page instead of the CSV")
+        raise RuntimeError("returned an HTML page instead of the CSV")
     return r.content
+
+
+def _ee_bytes():
+    """The Estonian site sometimes blocks cloud servers (HTTP 403). Retry a few
+    times over ~8 minutes, alternating between equivalent page addresses."""
+    import time
+    waits = [0, 30, 90, 180, 180]
+    last = None
+    for i, w in enumerate(waits):
+        time.sleep(w)
+        url = EE_PAGES[i % len(EE_PAGES)]
+        try:
+            return _ee_once(url)
+        except Exception as e:
+            last = e
+            print(f"EE attempt {i + 1} failed ({url}): {e}")
+    raise last
 
 
 def fetch_ee(offline=None):
@@ -380,6 +407,11 @@ def send_email(subject, html):
     print(f"Email sent to {to}")
 
 
+def _failed_days(meta, country_name):
+    code = {v: k for k, v in COUNTRY_NAMES.items()}.get(country_name, country_name)
+    return meta.get(code, {}).get("fail_streak", 0)
+
+
 # ----------------------------------------------------------------- main
 def main():
     args = sys.argv[1:]
@@ -408,7 +440,11 @@ def main():
             traceback.print_exc()
             failures.append(f"{COUNTRY_NAMES[c]}: {str(e)[:200]}")
             rows.extend(old_rows.get(c, []))  # keep yesterday's data on the dashboard
-            meta.setdefault(c, {})["last_error"] = f"{today_s}: {str(e)[:300]}"
+            m = meta.setdefault(c, {})
+            if m.get("last_fail_day") != today_s:
+                m["fail_streak"] = m.get("fail_streak", 0) + 1
+                m["last_fail_day"] = today_s
+            m["last_error"] = f"{today_s}: {str(e)[:300]}"
             continue
 
         baseline = c not in seen
@@ -421,7 +457,8 @@ def main():
                          mah_key(p["mah"]), p["procedure"],
                          p["auth_date"].isoformat() if p["auth_date"] else "",
                          "" if fs == "baseline" else fs, p["rx"], p["url"]])
-        meta[c] = {"count": len(prods), "last_ok": today_s, "baseline_date": meta.get(c, {}).get("baseline_date", today_s)}
+        meta[c] = {"count": len(prods), "last_ok": today_s, "fail_streak": 0,
+                   "baseline_date": meta.get(c, {}).get("baseline_date", today_s)}
         print(f"{c}: {len(prods)} products ({'baseline' if baseline else 'compared'})")
 
     # canonical display name per MAH key (most common spelling)
@@ -444,7 +481,12 @@ def main():
     repo = os.environ.get("GITHUB_REPOSITORY", "user/baltic-ma-tracker")
     owner, name = repo.split("/", 1)
     dash_url = f"https://{owner.lower()}.github.io/{name}/"
-    if TODAY.weekday() == 0 or force_email:
+    now_h = datetime.now(TZ).hour
+    digest_due = TODAY.weekday() == 0 and meta.get("_last_digest") != today_s
+    if digest_due and failures and now_h < 12:
+        digest_due = False  # a source failed this morning: wait for the midday retry run
+        print("Source failed - digest postponed to the midday run")
+    if digest_due or force_email:
         new_items = []
         for r in rows:
             d = dict(zip(cols, r))
@@ -459,11 +501,14 @@ def main():
         html = build_email(new_items, failures, dash_url, start + timedelta(days=1), TODAY)
         (STATE_DIR / "last_email.html").write_text(html, encoding="utf-8")
         send_email(f"Baltic new authorisations: {len(new_items)} products ({TODAY:%d %b})", html)
-    elif failures:
+        if not force_email:
+            meta["_last_digest"] = today_s
+            save_json(STATE_DIR / "meta.json", meta)
+    elif failures and all(_failed_days(meta, c.split(":")[0]) >= 2 for c in failures):
         html = ("<p>The daily register update had a problem:</p><ul>" +
                 "".join(f"<li>{escape(f)}</li>" for f in failures) +
                 f"</ul><p>The dashboard keeps the last good data for that country. "
-                f"If this repeats for several days, the source has probably changed.</p><p><a href='{dash_url}'>Dashboard</a></p>")
+                f"It has failed two days in a row, so the source may have changed or be blocking the server.</p><p><a href='{dash_url}'>Dashboard</a></p>")
         last_alert = meta.get("_last_alert")
         if last_alert != today_s:
             send_email("Baltic tracker: source problem", html)
