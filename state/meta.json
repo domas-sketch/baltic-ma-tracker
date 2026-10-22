@@ -3,18 +3,20 @@
   "baseline_date": "2026-10-18",
   "count": 6108,
   "fail_streak": 0,
-  "last_ok": "2026-10-21"
+  "last_ok": "2026-10-22"
  },
  "LT": {
   "baseline_date": "2026-10-18",
-  "count": 11947,
+  "count": 11953,
   "fail_streak": 0,
-  "last_ok": "2026-10-21"
+  "last_ok": "2026-10-22"
  },
  "LV": {
   "baseline_date": "2026-10-18",
   "count": 18542,
-  "fail_streak": 0,
+  "fail_streak": 1,
+  "last_error": "2026-10-22: HTTPSConnectionPool(host='data.gov.lv', port=443): Max retries exceeded with url: /dati/api/3/action/package_show?id=latvijas-zalu-registrs (Caused by ConnectTimeoutError(<HTTPSConnection(host='data.gov.lv', port=443) at 0x7f8f0354ee10>, 'Connection to data.gov.lv timed out. (connect timeout=300)'))",
+  "last_fail_day": "2026-10-22",
   "last_ok": "2026-10-21"
  },
  "_last_digest": "2026-10-19"
