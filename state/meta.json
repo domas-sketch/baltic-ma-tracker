@@ -3,22 +3,22 @@
   "baseline_date": "2026-10-18",
   "count": 6108,
   "fail_streak": 0,
-  "last_ok": "2026-10-23"
+  "last_ok": "2026-10-24"
  },
  "LT": {
   "baseline_date": "2026-10-18",
   "count": 11948,
   "fail_streak": 0,
-  "last_ok": "2026-10-23"
+  "last_ok": "2026-10-24"
  },
  "LV": {
   "baseline_date": "2026-10-18",
   "count": 18542,
-  "fail_streak": 2,
-  "last_error": "2026-10-23: HTTPSConnectionPool(host='dati.zva.gov.lv', port=443): Max retries exceeded with url: /zalu-registrs/export/HumanProducts.xml.zip (Caused by ConnectTimeoutError(<HTTPSConnection(host='dati.zva.gov.lv', port=443) at 0x7fcde9fe2f60>, 'Connection to dati.zva.gov.lv timed out. (connect timeout=300)'))",
-  "last_fail_day": "2026-10-23",
+  "fail_streak": 3,
+  "last_error": "2026-10-24: HTTPSConnectionPool(host='dati.zva.gov.lv', port=443): Max retries exceeded with url: /zalu-registrs/export/HumanProducts.xml.zip (Caused by ConnectTimeoutError(<HTTPSConnection(host='dati.zva.gov.lv', port=443) at 0x7f96c7e57320>, 'Connection to dati.zva.gov.lv timed out. (connect timeout=300)'))",
+  "last_fail_day": "2026-10-24",
   "last_ok": "2026-10-21"
  },
- "_last_alert": "2026-10-23",
+ "_last_alert": "2026-10-24",
  "_last_digest": "2026-10-19"
 }
