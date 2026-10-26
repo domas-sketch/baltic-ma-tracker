@@ -2,7 +2,9 @@
  "EE": {
   "baseline_date": "2026-10-18",
   "count": 6108,
-  "fail_streak": 0,
+  "fail_streak": 1,
+  "last_error": "2026-10-26: EE columns changed: ['Product class', 'Package type', 'Package code', 'Package name', 'ATC code', 'Active substance', 'Active substance content', 'Class of active substance', 'Dosage form', 'Prescription', 'Prescription type', 'NarcType', 'Authorization holder', 'Manufacturer', 'Marketing authorizat",
+  "last_fail_day": "2026-10-26",
   "last_ok": "2026-10-26"
  },
  "LT": {
@@ -13,12 +15,10 @@
  },
  "LV": {
   "baseline_date": "2026-10-18",
-  "count": 18542,
-  "fail_streak": 5,
-  "last_error": "2026-10-26: HTTPSConnectionPool(host='dati.zva.gov.lv', port=443): Max retries exceeded with url: /zalu-registrs/export/HumanProducts.xml.zip (Caused by ConnectTimeoutError(<HTTPSConnection(host='dati.zva.gov.lv', port=443) at 0x7fc9cd8decf0>, 'Connection to dati.zva.gov.lv timed out. (connect timeout=300)'))",
-  "last_fail_day": "2026-10-26",
-  "last_ok": "2026-10-21"
+  "count": 18546,
+  "fail_streak": 0,
+  "last_ok": "2026-10-26"
  },
  "_last_alert": "2026-10-26",
- "_last_digest": "2026-10-19"
+ "_last_digest": "2026-10-26"
 }
