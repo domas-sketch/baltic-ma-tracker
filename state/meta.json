@@ -2,7 +2,9 @@
  "EE": {
   "baseline_date": "2026-10-18",
   "count": 6098,
-  "fail_streak": 0,
+  "fail_streak": 1,
+  "last_error": "2026-10-29: EE columns changed: ['Product class', 'Package type', 'Package code', 'Package name', 'ATC code', 'Active substance', 'Active substance content', 'Class of active substance', 'Dosage form', 'Prescription', 'Prescription type', 'NarcType', 'Authorization holder', 'Manufacturer', 'Marketing authorizat",
+  "last_fail_day": "2026-10-29",
   "last_ok": "2026-10-29"
  },
  "LT": {
