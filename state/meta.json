@@ -3,19 +3,19 @@
   "baseline_date": "2026-10-18",
   "count": 6098,
   "fail_streak": 0,
-  "last_ok": "2026-10-30"
+  "last_ok": "2026-10-31"
  },
  "LT": {
   "baseline_date": "2026-10-18",
-  "count": 11964,
+  "count": 11945,
   "fail_streak": 0,
-  "last_ok": "2026-10-30"
+  "last_ok": "2026-10-31"
  },
  "LV": {
   "baseline_date": "2026-10-18",
   "count": 18553,
   "fail_streak": 0,
-  "last_ok": "2026-10-30"
+  "last_ok": "2026-10-31"
  },
  "_last_alert": "2026-10-26",
  "_last_digest": "2026-10-26"
