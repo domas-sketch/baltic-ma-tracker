@@ -2,23 +2,21 @@
  "EE": {
   "baseline_date": "2026-10-18",
   "count": 6098,
-  "fail_streak": 1,
-  "last_error": "2026-11-01: EE columns changed: ['Product class', 'Package type', 'Package code', 'Package name', 'ATC code', 'Active substance', 'Active substance content', 'Class of active substance', 'Dosage form', 'Prescription', 'Prescription type', 'NarcType', 'Authorization holder', 'Manufacturer', 'Marketing authorizat",
-  "last_fail_day": "2026-11-01",
-  "last_ok": "2026-11-01"
+  "fail_streak": 0,
+  "last_ok": "2026-11-02"
  },
  "LT": {
   "baseline_date": "2026-10-18",
   "count": 11944,
   "fail_streak": 0,
-  "last_ok": "2026-11-01"
+  "last_ok": "2026-11-02"
  },
  "LV": {
   "baseline_date": "2026-10-18",
   "count": 18553,
   "fail_streak": 0,
-  "last_ok": "2026-11-01"
+  "last_ok": "2026-11-02"
  },
  "_last_alert": "2026-10-26",
- "_last_digest": "2026-10-26"
+ "_last_digest": "2026-11-02"
 }
