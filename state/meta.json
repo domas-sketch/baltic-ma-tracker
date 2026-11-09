@@ -3,7 +3,7 @@
   "baseline_date": "2026-10-18",
   "count": 6135,
   "fail_streak": 1,
-  "last_error": "2026-11-09: 403 Client Error: Forbidden for url: https://www.ravimiregister.ee/en/publichomepage.aspx?pv=PublicDownloads",
+  "last_error": "2026-11-09: EE columns changed: ['Product class', 'Package type', 'Package code', 'Package name', 'ATC code', 'Active substance', 'Active substance content', 'Class of active substance', 'Dosage form', 'Prescription', 'Prescription type', 'NarcType', 'Authorization holder', 'Manufacturer', 'Marketing authorizat",
   "last_fail_day": "2026-11-09",
   "last_ok": "2026-11-08"
  },
@@ -20,5 +20,5 @@
   "last_ok": "2026-11-09"
  },
  "_last_alert": "2026-10-26",
- "_last_digest": "2026-11-02"
+ "_last_digest": "2026-11-09"
 }
