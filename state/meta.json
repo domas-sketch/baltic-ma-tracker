@@ -1,11 +1,9 @@
 {
  "EE": {
   "baseline_date": "2026-10-18",
-  "count": 6135,
-  "fail_streak": 2,
-  "last_error": "2026-11-10: 524 Server Error: <none> for url: https://www.ravimiregister.ee/en/publichomepage.aspx?pv=PublicDownloads",
-  "last_fail_day": "2026-11-10",
-  "last_ok": "2026-11-08"
+  "count": 6134,
+  "fail_streak": 0,
+  "last_ok": "2026-11-10"
  },
  "LT": {
   "baseline_date": "2026-10-18",
